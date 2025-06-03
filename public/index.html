@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <style>
+      #chat-container {
+        display: none;
+      }
+      #messages {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body class="container py-4">
+    <h1 class="mb-4">Chat</h1>
+
+    <div id="login-container">
+      <div class="mb-3">
+        <label for="username" class="form-label">Enter username</label>
+        <input id="username" class="form-control" placeholder="user1234" />
+      </div>
+      <button id="enter-btn" class="btn btn-success">Save</button>
+    </div>
+
+    <div id="chat-container">
+      <ul id="messages" class="list-group mb-3"></ul>
+      <form id="form" class="row g-2">
+        <div class="col-10">
+          <input
+            id="message"
+            autocomplete="off"
+            class="form-control"
+            placeholder="Введіть повідомлення"
+            required />
+        </div>
+        <div class="col-2">
+          <button class="btn btn-primary w-100">Send</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const loginContainer = document.getElementById('login-container');
+      const chatContainer = document.getElementById('chat-container');
+      const usernameInput = document.getElementById('username');
+      const enterBtn = document.getElementById('enter-btn');
+      const form = document.getElementById('form');
+      const messageInput = document.getElementById('message');
+      const messages = document.getElementById('messages');
+
+      let username = `user${Math.floor(Math.random() * 10000)}`;
+      usernameInput.value = username;
+
+      let socket;
+
+      enterBtn.onclick = () => {
+        const input = usernameInput.value.trim();
+        if (!input) return;
+
+        username = input;
+        loginContainer.style.display = 'none';
+        chatContainer.style.display = 'block';
+
+        socket = io({ query: { username } });
+
+        socket.on('chat message', (msg) => {
+          const item = document.createElement('li');
+          item.className = 'list-group-item';
+          item.textContent = msg;
+          messages.appendChild(item);
+          messages.scrollTop = messages.scrollHeight;
+        });
+
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const msg = messageInput.value.trim();
+          if (!msg) return;
+          socket.emit('chat message', { message: msg });
+          messageInput.value = '';
+        });
+      };
+    </script>
+  </body>
+</html>
