@@ -1,0 +1,17 @@
+{
+  "name": "pis_6",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file .env src/server.js",
+    "start:dev": "node --env-file .env --watch src/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}
